@@ -6,7 +6,7 @@ Will try to document my process.
 This seems like a good first thing to tackle. It will be much easier to build out the backend if there is a frontend in place.
 According to instructions, the MVP should be in vanilla js, which is quite nice, and in that case, just how simple can it be? Not
 sure if jQuery is cool or not so lets not use that, or at least try not to.
-
+**** Mock comment data
 Mock data will just be a big JSON file, but lets try to interface with it from the get-go like its an API. The MVP need not have
 nested comments/replies, but no sense in not, at least, setting ourselves up for them. Let us say right now that a comment will have
 replies as an array of comment IDs, and every comment will also have an "in-reply-to" part, just an ID, but if the id is -1, its a
@@ -22,6 +22,42 @@ replies as an array of comment IDs, and every comment will also have an "in-repl
     {"id": 5, "text": "Lorem Ipsum5", "username": "chad", "replies": [], "in-reply-to": -1},
     {"id": 6, "text": "Lorem Ipsum6", "username": "chad", "replies": [], "in-reply-to": -1},
     {"id": 7, "text": "Lorem Ipsum7", "username": "chad", "replies": [], "in-reply-to": -1},
-    {"id": 8, "text": "Lorem Ipsum8", "username": "chad", "replies": [], "in-reply-to": -1},
+    {"id": 8, "text": "Lorem Ipsum8", "username": "chad", "replies": [], "in-reply-to": -1}
 ]
+#+end_src
+
+**** A simple js script for a plain html page
+
+Just how simple can it be?
+#+begin_src js :tangle main.js
+function formatComment(data){
+    return `${data.username} says: ${data.text}`
+}
+
+
+//Takes comment data and returns a list element with its data
+function renderComment(data){
+    let el = document.createElement("li")
+    el.innerHTML = formatComment(data)
+    return el
+}
+
+// Takes an array of comment data and returns an ol element saturated with the comments
+function renderAllComments(datas){
+   let list = document.createElement("ol")
+    for(let i = 0; i<datas.length; i++){
+       const thisEl = renderComment(datas[i])
+        list.appendChild(thisEl)
+    }
+    document.body.appendChild(list)
+}
+
+// async, returns a Promise with an array of comments
+function fetchComments(){
+   return fetch("mock-comments.json").then(res=>{
+      return res.json()
+   })
+}
+
+fetchComments().then(res=>renderAllComments(res))
 #+end_src
