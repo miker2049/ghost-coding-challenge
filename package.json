@@ -1,0 +1,9 @@
+{
+  "name": "ghost-challenge",
+  "version": "0.0.1",
+  "description": "The Ghost Coding challenge, by Mike Russo.",
+  "main": "index.js",
+  "repository": "https://github.com/miker2049/ghost-coding-challenge",
+  "author": "Mike Russo <russomichaelb@gmail.com>",
+  "license": "MIT"
+}
