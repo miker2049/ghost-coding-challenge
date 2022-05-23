@@ -1,0 +1,27 @@
+* ghost-coding-challenge
+Ghost Coding Challenge.
+** Steps, thought process
+Will try to document my process.
+*** TODO Vanilla frontend with mock data
+This seems like a good first thing to tackle. It will be much easier to build out the backend if there is a frontend in place.
+According to instructions, the MVP should be in vanilla js, which is quite nice, and in that case, just how simple can it be? Not
+sure if jQuery is cool or not so lets not use that, or at least try not to.
+
+Mock data will just be a big JSON file, but lets try to interface with it from the get-go like its an API. The MVP need not have
+nested comments/replies, but no sense in not, at least, setting ourselves up for them. Let us say right now that a comment will have
+replies as an array of comment IDs, and every comment will also have an "in-reply-to" part, just an ID, but if the id is -1, its a
+"root", comment.  Also our only user is someone named Chad.
+
+#+begin_src json :tangle mock-comments.json
+[
+    {"id": 0, "text": "Lorem Ipsum", "username": "chad", "replies": [], "in-reply-to": -1},
+    {"id": 1, "text": "Lorem Ipsum1", "username": "chad", "replies": [], "in-reply-to": -1},
+    {"id": 2, "text": "Lorem Ipsum2", "username": "chad", "replies": [], "in-reply-to": -1},
+    {"id": 3, "text": "Lorem Ipsum3", "username": "chad", "replies": [], "in-reply-to": -1},
+    {"id": 4, "text": "Lorem Ipsum4", "username": "chad", "replies": [], "in-reply-to": -1},
+    {"id": 5, "text": "Lorem Ipsum5", "username": "chad", "replies": [], "in-reply-to": -1},
+    {"id": 6, "text": "Lorem Ipsum6", "username": "chad", "replies": [], "in-reply-to": -1},
+    {"id": 7, "text": "Lorem Ipsum7", "username": "chad", "replies": [], "in-reply-to": -1},
+    {"id": 8, "text": "Lorem Ipsum8", "username": "chad", "replies": [], "in-reply-to": -1},
+]
+#+end_src
