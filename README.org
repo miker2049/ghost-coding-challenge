@@ -1,5 +1,5 @@
 * ghost-coding-challenge
-Ghost Coding Challenge.
+Ghost Coding Challenge. Found [[https://ghost.notion.site/Coding-challenge-4b8ae672b90745dda06afeeea0f27267][here]].
 ** Steps, thought process
 Will try to document my process.
 *** TODO Vanilla frontend with mock data
@@ -65,7 +65,7 @@ function fetchComments(){
 }
 
 #+end_src
-**** Submit comment and creating state
+**** Submit comment
 This is very simple indeed!  But how can I add a submit button? The whole thing is tied to that async call to the mock data, which once done, can render the page.  Let us not have the mock data dictate our strategy, the backend will need eventually to be made, and there everything will be discreet API calls.  I think for now, a global variable in our script will suffice, to mock the "global" endpoint.
 
 #+begin_src js :tangle main.js :noweb yes
