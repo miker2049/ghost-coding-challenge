@@ -1,3 +1,5 @@
+var DBGLOBAL = []
+
 function formatComment(data){
     return `${data.username} says: ${data.text} -- ${data.upvotes} &#128420;`
 }
@@ -11,12 +13,15 @@ function renderComment(data){
 
 // Takes an array of comment data and returns an ol element saturated with the comments
 function renderAllComments(datas){
+  
+   document.querySelector("#comments-list").innerHTML = ''
    let list = document.createElement("ol")
+
     for(let i = 0; i<datas.length; i++){
        const thisEl = renderComment(datas[i])
         list.appendChild(thisEl)
     }
-    document.body.appendChild(list)
+    document.querySelector("#comments-list").appendChild(list)
 }
 
 // async, returns a Promise with an array of comments
@@ -26,4 +31,34 @@ function fetchComments(){
    })
 }
 
-fetchComments().then(res=>renderAllComments(res))
+
+function insertComment(data){
+    DBGLOBAL.push(data)
+}
+
+function render(){
+    fetchComments().then(res=>{
+        if(DBGLOBAL.length>0){
+            res = res.concat(DBGLOBAL)
+        }
+        res = res.sort((a,b)=> a.id - b.id)
+        renderAllComments(res)
+    })
+}
+
+function submitComment(){
+  let comment = document.querySelector('#comment-box')
+  if(comment){
+    console.log(comment.value)
+    insertComment({
+        id: 32,
+        upvotes: 0,
+        username: "chad",
+        text: comment.value,
+        replies: [],
+        "in-reply-to": -1
+    })
+    render()
+  }
+}
+render()

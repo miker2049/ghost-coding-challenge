@@ -31,7 +31,8 @@ One thing to note is upvotes should probably be an array of ids, so people can k
 **** A simple js script for a plain html page
 
 Just how simple can it be?
-#+begin_src js :tangle main.js
+#+name: comment-view-utils
+#+begin_src js
 function formatComment(data){
     return `${data.username} says: ${data.text} -- ${data.upvotes} &#128420;`
 }
@@ -45,12 +46,15 @@ function renderComment(data){
 
 // Takes an array of comment data and returns an ol element saturated with the comments
 function renderAllComments(datas){
+  
+   document.querySelector("#comments-list").innerHTML = ''
    let list = document.createElement("ol")
+
     for(let i = 0; i<datas.length; i++){
        const thisEl = renderComment(datas[i])
         list.appendChild(thisEl)
     }
-    document.body.appendChild(list)
+    document.querySelector("#comments-list").appendChild(list)
 }
 
 // async, returns a Promise with an array of comments
@@ -60,7 +64,43 @@ function fetchComments(){
    })
 }
 
-fetchComments().then(res=>renderAllComments(res))
 #+end_src
+**** Submit comment and creating state
+This is very simple indeed!  But how can I add a submit button? The whole thing is tied to that async call to the mock data, which once done, can render the page.  Let us not have the mock data dictate our strategy, the backend will need eventually to be made, and there everything will be discreet API calls.  I think for now, a global variable in our script will suffice, to mock the "global" endpoint.
 
-This is very simple indeed!  But how can I add a submit button? The whole thing is tied to
+#+begin_src js :tangle main.js :noweb yes
+var DBGLOBAL = []
+
+<<comment-view-utils>>
+
+function insertComment(data){
+    DBGLOBAL.push(data)
+}
+
+function render(){
+    fetchComments().then(res=>{
+        if(DBGLOBAL.length>0){
+            res = res.concat(DBGLOBAL)
+        }
+        res = res.sort((a,b)=> a.id - b.id)
+        renderAllComments(res)
+    })
+}
+
+function submitComment(){
+  let comment = document.querySelector('#comment-box')
+  if(comment){
+    console.log(comment.value)
+    insertComment({
+        id: 32,
+        upvotes: 0,
+        username: "chad",
+        text: comment.value,
+        replies: [],
+        "in-reply-to": -1
+    })
+    render()
+  }
+}
+render()
+#+end_src
