@@ -1,11 +1,11 @@
 [
-    {"id": 0, "text": "Lorem Ipsum", "username": "chad", "replies": [], "in-reply-to": -1},
-    {"id": 1, "text": "Lorem Ipsum1", "username": "chad", "replies": [], "in-reply-to": -1},
-    {"id": 2, "text": "Lorem Ipsum2", "username": "chad", "replies": [], "in-reply-to": -1},
-    {"id": 3, "text": "Lorem Ipsum3", "username": "chad", "replies": [], "in-reply-to": -1},
-    {"id": 4, "text": "Lorem Ipsum4", "username": "chad", "replies": [], "in-reply-to": -1},
-    {"id": 5, "text": "Lorem Ipsum5", "username": "chad", "replies": [], "in-reply-to": -1},
-    {"id": 6, "text": "Lorem Ipsum6", "username": "chad", "replies": [], "in-reply-to": -1},
-    {"id": 7, "text": "Lorem Ipsum7", "username": "chad", "replies": [], "in-reply-to": -1},
-    {"id": 8, "text": "Lorem Ipsum8", "username": "chad", "replies": [], "in-reply-to": -1}
+    {"id": 0, "upvotes": 33, "text": "Lorem Ipsum", "username": "chad", "replies": [], "in-reply-to": -1},
+    {"id": 1, "upvotes": 0, "text": "Lorem Ipsum1", "username": "chad", "replies": [], "in-reply-to": -1},
+    {"id": 2, "upvotes": 0, "text": "Lorem Ipsum2", "username": "chad", "replies": [], "in-reply-to": -1},
+    {"id": 3, "upvotes": 0, "text": "Lorem Ipsum3", "username": "chad", "replies": [], "in-reply-to": -1},
+    {"id": 4, "upvotes": 7, "text": "Lorem Ipsum4", "username": "chad", "replies": [], "in-reply-to": -1},
+    {"id": 5, "upvotes": 0, "text": "Lorem Ipsum5", "username": "chad", "replies": [], "in-reply-to": -1},
+    {"id": 6, "upvotes": 9, "text": "Lorem Ipsum6", "username": "chad", "replies": [], "in-reply-to": -1},
+    {"id": 7, "upvotes": 0, "text": "Lorem Ipsum7", "username": "chad", "replies": [], "in-reply-to": -1},
+    {"id": 8, "upvotes": 0, "text": "Lorem Ipsum8", "username": "chad", "replies": [], "in-reply-to": -1}
 ]

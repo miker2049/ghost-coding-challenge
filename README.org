@@ -14,26 +14,27 @@ replies as an array of comment IDs, and every comment will also have an "in-repl
 
 #+begin_src json :tangle mock-comments.json
 [
-    {"id": 0, "text": "Lorem Ipsum", "username": "chad", "replies": [], "in-reply-to": -1},
-    {"id": 1, "text": "Lorem Ipsum1", "username": "chad", "replies": [], "in-reply-to": -1},
-    {"id": 2, "text": "Lorem Ipsum2", "username": "chad", "replies": [], "in-reply-to": -1},
-    {"id": 3, "text": "Lorem Ipsum3", "username": "chad", "replies": [], "in-reply-to": -1},
-    {"id": 4, "text": "Lorem Ipsum4", "username": "chad", "replies": [], "in-reply-to": -1},
-    {"id": 5, "text": "Lorem Ipsum5", "username": "chad", "replies": [], "in-reply-to": -1},
-    {"id": 6, "text": "Lorem Ipsum6", "username": "chad", "replies": [], "in-reply-to": -1},
-    {"id": 7, "text": "Lorem Ipsum7", "username": "chad", "replies": [], "in-reply-to": -1},
-    {"id": 8, "text": "Lorem Ipsum8", "username": "chad", "replies": [], "in-reply-to": -1}
+    {"id": 0, "upvotes": 33, "text": "Lorem Ipsum", "username": "chad", "replies": [], "in-reply-to": -1},
+    {"id": 1, "upvotes": 0, "text": "Lorem Ipsum1", "username": "chad", "replies": [], "in-reply-to": -1},
+    {"id": 2, "upvotes": 0, "text": "Lorem Ipsum2", "username": "chad", "replies": [], "in-reply-to": -1},
+    {"id": 3, "upvotes": 0, "text": "Lorem Ipsum3", "username": "chad", "replies": [], "in-reply-to": -1},
+    {"id": 4, "upvotes": 7, "text": "Lorem Ipsum4", "username": "chad", "replies": [], "in-reply-to": -1},
+    {"id": 5, "upvotes": 0, "text": "Lorem Ipsum5", "username": "chad", "replies": [], "in-reply-to": -1},
+    {"id": 6, "upvotes": 9, "text": "Lorem Ipsum6", "username": "chad", "replies": [], "in-reply-to": -1},
+    {"id": 7, "upvotes": 0, "text": "Lorem Ipsum7", "username": "chad", "replies": [], "in-reply-to": -1},
+    {"id": 8, "upvotes": 0, "text": "Lorem Ipsum8", "username": "chad", "replies": [], "in-reply-to": -1}
 ]
 #+end_src
+
+One thing to note is upvotes should probably be an array of ids, so people can know who upvoted them (unclear in the prompt if it is the case, but lets air on the side of featureful), also username should just be rowid.  We must remember that.
 
 **** A simple js script for a plain html page
 
 Just how simple can it be?
 #+begin_src js :tangle main.js
 function formatComment(data){
-    return `${data.username} says: ${data.text}`
+    return `${data.username} says: ${data.text} -- ${data.upvotes} &#128420;`
 }
-
 
 //Takes comment data and returns a list element with its data
 function renderComment(data){
@@ -61,3 +62,5 @@ function fetchComments(){
 
 fetchComments().then(res=>renderAllComments(res))
 #+end_src
+
+This is very simple indeed!  But how can I add a submit button? The whole thing is tied to

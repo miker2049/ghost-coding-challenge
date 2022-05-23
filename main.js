@@ -1,7 +1,6 @@
 function formatComment(data){
-    return `${data.username} says: ${data.text}`
+    return `${data.username} says: ${data.text} -- ${data.upvotes} &#128420;`
 }
-
 
 //Takes comment data and returns a list element with its data
 function renderComment(data){
