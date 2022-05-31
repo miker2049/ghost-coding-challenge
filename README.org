@@ -218,3 +218,88 @@ app.on('error', onError);
 
 Ok, so with this, some simple curl tests show we are getting the expected output!  Something I realized doing this is that we probably want to assume that, in fact, there is more than one article someone might comment on.  So, the api considers the parameter/query of article id.  It seems we are naturally pushed now towards creating our schema, which will be done with sqlite.
 
+*** DONE the database
+CLOSED: [2022-05-31 Tue 15:07]
+:LOGBOOK:
+CLOCK: [2022-05-31 Tue 14:55]--[2022-05-31 Tue 15:07] =>  0:12
+CLOCK: [2022-05-31 Tue 13:31]--[2022-05-31 Tue 14:10] =>  0:39
+CLOCK: [2022-05-31 Tue 13:05]--[2022-05-31 Tue 13:20] =>  0:15
+CLOCK: [2022-05-31 Tue 12:45]--[2022-05-31 Tue 12:55] =>  0:10
+:END:
+Ok, so a there needs to be a database, what tables does it need on it?  It will need a comments table of course.
+
+#+begin_src sqlite :tangle db-schema.sql
+CREATE TABLE IF NOT EXISTS comments (
+id INTEGER PRIMARY KEY AUTOINCREMENT,
+-- likes INTEGER REFERENCES like_tallies(id),
+user INTEGER REFERENCES users(id),
+article INTEGER REFERENCES articles(id),
+comment_text TEXT DEFAULT "",
+in_reply_to INTEGER DEFAULT -1 REFERENCES comments(id)
+);
+#+end_src
+
+N.B. We are setting ourselves up to /not/ know who likes a comment.  This isn't quite specified one way or another, but I kinda feel it wont be too hard to add in the front later; it simply needs to be handled in the business logic part of it.  We just need another table "likes" that relates a comment ID with a user ID.
+
+
+#+begin_src sqlite :tangle db-schema.sql
+CREATE TABLE IF NOT EXISTS likes (
+id INTEGER PRIMARY KEY AUTOINCREMENT,
+user INTEGER REFERENCES users(id),
+comment INTEGER REFERENCES comments(id));
+#+end_src
+
+But /now/ the problem is in order to get like tally, there needs to be a relatively expensive =count= query.  Seems like a problem that triggers can solve, I think thats what its called... Lets see...
+
+Yes this is what we want!  If there is an insertion into the likes table, then /another/ table called =like_tallies= will be updated with the new =count=.  If some one changes their mind and unlikes a comment, that row in likes will be deleted, and again we update the count.  It's a simple memiozation at the database level.
+
+
+#+begin_src sqlite :tangle db-schema.sql
+CREATE TABLE IF NOT EXISTS like_tallies (
+id INTEGER PRIMARY KEY AUTOINCREMENT,
+comment_id INTEGER REFERENCES comments(id),
+like_count INTEGER DEFAULT 0);
+
+CREATE TRIGGER IF NOT EXISTS new_like_trigger
+AFTER INSERT ON likes
+BEGIN
+UPDATE like_tallies SET like_count = (SELECT count(id) FROM likes where comment = NEW.comment) WHERE comment_id = NEW.comment;
+END;
+
+CREATE TRIGGER IF NOT EXISTS unlike_trigger
+AFTER DELETE ON likes
+BEGIN
+UPDATE like_tallies SET like_count = (SELECT count(id) FROM likes where comment = NEW.comment) WHERE comment_id = NEW.comment;
+END;
+
+CREATE TRIGGER IF NOT EXISTS new_like_tally
+AFTER INSERT ON comments
+BEGIN
+INSERT INTO like_tallies(comment_id, like_count) VALUES (NEW.id, 0);
+END;
+#+end_src
+
+Ok, so this is looking good!  Few more things to finish up:
+
+#+begin_src sqlite :tangle db-schema.sql
+CREATE TABLE IF NOT EXISTS articles (
+id INTEGER PRIMARY KEY AUTOINCREMENT,
+data TEXT );
+
+CREATE TABLE IF NOT EXISTS users (
+id INTEGER PRIMARY KEY AUTOINCREMENT,
+username TEXT );
+
+
+-- some default values
+INSERT INTO users(username) VALUES ("DEFAULT_USER");
+INSERT INTO articles(data) VALUES ("an interesting article, maybe someone will comment on it?");
+INSERT INTO comments(id, user, article, comment_text) VALUES (-1, 1, 1, "the singleton root comment");
+#+end_src
+
+NB.  Wasted time, there is a gotcha that =WHERE= statements can't be inside triggers!  Spent too much time there... RTFM.
+
+
+But, this tangles into a functional init script for our db, and it /seems/ like the triggers are working ok.  One problem so far is that there is nothing stopping a user from liking something twice, as far as this logic is concerned.  Seems like we just need the right UNIQUE placement, but also this should be checked a little farther outside too!
+
+ANOTHER MISTAKE.  I didn't think about nesting and comments... Which might complicate our "article" part of the schema... We have already decided on the convention of an "in-reply-to" having a -1 number to imply it is not in reply to anyone.  And in itself that means that if it is, in fact, in reply to someone it would get a a global id of the parent comment.  What are the consequences of just adding that field? Maybe with a default value...  I don't think much, but it is some extra work on the controller/API side.  That is fine.  Will update it up there now.  (Sqlite does allow a foreign key to be a local key!)
