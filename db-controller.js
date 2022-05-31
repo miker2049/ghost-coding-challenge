@@ -10,9 +10,11 @@ module.exports = {
       })
     })
   },
-  async getComments(article, $min, $max){
+  async getComments($article, $limit, $offset){
+    $limit = Math.max($limit, 1000) // other people have to use the db too!
     return await new Promise((res,rej)=>{
-      db.get('SELECT * FROM comments WHERE id > $min AND id < $max LIMIT 100', {$min, $max},(err, rows)=>{
+      db.get('SELECT * FROM comments WHERE article = $article LIMIT $limit OFFSET $offset',
+             {$limit, $offset, $article},(err, rows)=>{
         res(rows)
       })
     })

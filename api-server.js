@@ -36,8 +36,8 @@ app.get('/api/comment/:id', async (req,res, next)=>{
 app.get('/api/comments', async (req,res, next)=>{
     try{
         res.json(await controller.getComments(req.query.article,
-                                                  req.query.min,
-                                                  req.query.max));
+                                                  req.query.limit,
+                                                  req.query.offset));
     } catch (err) {
         next(err)
     }
