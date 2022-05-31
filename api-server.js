@@ -3,7 +3,9 @@ const app = express();
 
 const PORT = 3000
 
-//quick mock controller, (I miss typescript!)
+const controller = require('./db-controller')
+
+// quick mock controller, (I miss typescript!)
 const mockController = {
     async getComment(n){
         return JSON.stringify({msg: `You are getting comment with id ${n}`})
@@ -26,14 +28,14 @@ app.set('port', 3000);
 
 app.get('/api/comment/:id', async (req,res, next)=>{
     try{
-        res.json(await mockController.getComment(req.params.id));
+        res.json(await controller.getComment(req.params.id));
     } catch (err) {
         next(err)
     }
 })
 app.get('/api/comments', async (req,res, next)=>{
     try{
-        res.json(await mockController.getComments(req.query.article,
+        res.json(await controller.getComments(req.query.article,
                                                   req.query.min,
                                                   req.query.max));
     } catch (err) {
@@ -42,21 +44,21 @@ app.get('/api/comments', async (req,res, next)=>{
 })
 app.get('/api/comment/count', async (req,res, next)=>{
     try{
-        res.json(await mockController.getCommentCount(req.query.article));
+        res.json(await controller.getCommentCount(req.query.article));
     } catch (err) {
         next(err)
     }
 })
 app.patch('/api/comment/like', async (req,res, next)=>{
     try{
-        res.json(await mockController.likeComment(req.query.id));
+        res.json(await controller.likeComment(req.query.id));
     } catch (err) {
         next(err)
     }
 })
 app.post('/api/comment', async (req,res, next)=>{
     try{
-        res.json(await mockController.getComment(req.query.article,
+        res.json(await controller.getComment(req.query.article,
                                                 req.query.username,
                                                 req.body)); //body as just plaintext, is that ok?  Where should we sanitize?
     } catch (err) {
@@ -79,11 +81,9 @@ function onError(error) {
         case 'EACCES':
             console.error(bind + ' requires elevated privileges');
             process.exit(1);
-            break;
         case 'EADDRINUSE':
             console.error(bind + ' is already in use');
             process.exit(1);
-            break;
         default:
             throw error;
     }

@@ -303,3 +303,60 @@ NB.  Wasted time, there is a gotcha that =WHERE= statements can't be inside trig
 But, this tangles into a functional init script for our db, and it /seems/ like the triggers are working ok.  One problem so far is that there is nothing stopping a user from liking something twice, as far as this logic is concerned.  Seems like we just need the right UNIQUE placement, but also this should be checked a little farther outside too!
 
 ANOTHER MISTAKE.  I didn't think about nesting and comments... Which might complicate our "article" part of the schema... We have already decided on the convention of an "in-reply-to" having a -1 number to imply it is not in reply to anyone.  And in itself that means that if it is, in fact, in reply to someone it would get a a global id of the parent comment.  What are the consequences of just adding that field? Maybe with a default value...  I don't think much, but it is some extra work on the controller/API side.  That is fine.  Will update it up there now.  (Sqlite does allow a foreign key to be a local key!)
+*** NEXT A db controller.
+:LOGBOOK:
+CLOCK: [2022-05-31 Tue 15:38]
+CLOCK: [2022-05-31 Tue 15:07]--[2022-05-31 Tue 15:13] =>  0:06
+:END:
+Moving right along here.  Next up, something to connect the database to our API.  A controller.  Here is where I will have to diverge from proper production because I am choosing Sqlite as my db provider, so differences will start to emerge from this particular implementation versus one using MySql.
+
+Will use the standard sqlite3 module, so native bindings.
+
+#+begin_src js :tangle db-controller.js
+const sqlite3 = require('sqlite3').verbose();
+const db = new sqlite3.Database('./database.db'); // probably shouldn't hardcode this in the module.. but its MVP
+
+module.exports = {
+  async getComment(n){
+    return await new Promise((res,rej)=>{
+      db.get('SELECT * FROM comments WHERE id= $id', {$id: n},(err, row)=>{
+        res(row)
+      })
+    })
+  },
+  async getComments(article, $min, $max){
+    return await new Promise((res,rej)=>{
+      db.get('SELECT * FROM comments WHERE id > $min AND id < $max LIMIT 100', {$min, $max},(err, rows)=>{
+        res(rows)
+      })
+    })
+  },
+  async getCommentCount($article){
+    return await new Promise((res,rej)=>{
+      db.get('SELECT count(id) FROM comments WHERE article= $article', {$article},(err, row)=>{
+        res(row)
+      })
+    })
+  },
+  async postComment($article, $username, $text, $replyTo){
+    return await new Promise((res,rej)=>{
+      db.run('INSERT INTO comments(user, article, body, in_reply_to) VALUES ($user, $article, $text, $replyTo)', {$article, $user, $text, $replyTo}, function (err){
+        res(this.lastID)
+      })
+    })
+  },
+  async likeComment(commentID, userID){
+    return await new Promise((res,rej)=>{
+      db.run('INSERT INTO likes(user, comment) VALUES ($user, $comment)', {$user: userID, $comment: commentID}, function (err){
+        res(this.lastID)
+      })
+    })
+  }
+}
+#+end_src
+
+This seems like it should all work... Couple of thoughts as I did this.  I know we aren't thinking about authentication/users, but if we were, who should know the userID? Where would we store it and would there need to be another method in the controller that gets the id from the name?  I think its all outside the scope of this..  But I did leave the =likeComment= with param names that underline this point.
+
+I imagine that they way things normally work is the user logs in and now they are in a session; this session gives necessary ids to the client.  I'm sure its more complicated than just that but its probably something like that, and in general it makes sense to only query about a user ID once, and just keep that with the client.
+
+Let's see what happens when we plug this in.  (N.B. Note that from here forward we will work with the files alone, to no get confused about the tangling.  Especially for the express server part.)
