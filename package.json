@@ -5,5 +5,8 @@
   "main": "index.js",
   "repository": "https://github.com/miker2049/ghost-coding-challenge",
   "author": "Mike Russo <russomichaelb@gmail.com>",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.1"
+  }
 }

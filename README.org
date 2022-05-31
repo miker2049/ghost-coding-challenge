@@ -2,7 +2,8 @@
 Ghost Coding Challenge. Found [[https://ghost.notion.site/Coding-challenge-4b8ae672b90745dda06afeeea0f27267][here]].
 ** Steps, thought process
 Will try to document my process.
-*** TODO Vanilla frontend with mock data
+*** DONE Vanilla frontend with mock data
+CLOSED: [2022-05-31 Tue 12:33]
 This seems like a good first thing to tackle. It will be much easier to build out the backend if there is a frontend in place.
 According to instructions, the MVP should be in vanilla js, which is quite nice, and in that case, just how simple can it be? Not
 sure if jQuery is cool or not so lets not use that, or at least try not to.
@@ -104,3 +105,116 @@ function submitComment(){
 }
 render()
 #+end_src
+
+
+Very inefficiently rendering the whole thing when submitted!  But.. lets just add the backend and see what happens from there.
+*** DONE mock Express backend
+CLOSED: [2022-05-31 Tue 12:33]
+:LOGBOOK:
+CLOCK: [2022-05-31 Tue 11:59]--[2022-05-31 Tue 12:26] =>  0:27
+CLOCK: [2022-05-31 Tue 11:50]--[2022-05-31 Tue 11:55] =>  0:05
+:END:
+N.B. Will try to clock in and out from this point forward.  The work so far took approximately 45min-1hr.  There will be a lot of clocking in and out because working on this while I am on call at work.
+
+For V1 our API can be reduced to: a POST comment, a GET comment(s), a PATCH like.  One thing I am thinking about in general is how people usually "paginate" SQL queries.  We could conceivably have like a lot of comments, so we shouldn't just be like "SELECT * FROM comments" to every single client.  We need to know the total amount of comments, and then the client can requests ranges on their end.  This then entails one more API request: a GET comment count.  Perhaps as well we need to explicitly separate GET /a/ comment and GET comments plural.
+
+#+name:simple-express-backend
+#+begin_src js :tangle api-server.js
+const express = require('express')
+const app = express();
+
+const PORT = 3000
+
+//quick mock controller, (I miss typescript!)
+const mockController = {
+    async getComment(n){
+        return JSON.stringify({msg: `You are getting comment with id ${n}`})
+    },
+    async getComments(article, min, max){
+        return JSON.stringify({msg: `You are getting comments for article ${article} with ids between ${min} and ${max}`})
+    },
+    async getCommentCount(article){
+        return JSON.stringify({msg: `You are getting the amount of comments for article with id ${article}`})
+    },
+    async postComment(article, username, text){
+        return JSON.stringify({msg: `${username} has posted a comment to article with id ${id}, inputting the text "${text}"`})
+    },
+    async likeComment(n){
+        return JSON.stringify(`Comment with id ${n} is given a new like`)
+    }
+}
+
+app.set('port', 3000);
+
+app.get('/api/comment/:id', async (req,res, next)=>{
+    try{
+        res.json(await mockController.getComment(req.params.id));
+    } catch (err) {
+        next(err)
+    }
+})
+app.get('/api/comments', async (req,res, next)=>{
+    try{
+        res.json(await mockController.getComments(req.query.article,
+                                                  req.query.min,
+                                                  req.query.max));
+    } catch (err) {
+        next(err)
+    }
+})
+app.get('/api/comment/count', async (req,res, next)=>{
+    try{
+        res.json(await mockController.getCommentCount(req.query.article));
+    } catch (err) {
+        next(err)
+    }
+})
+app.patch('/api/comment/like', async (req,res, next)=>{
+    try{
+        res.json(await mockController.likeComment(req.query.id));
+    } catch (err) {
+        next(err)
+    }
+})
+app.post('/api/comment', async (req,res, next)=>{
+    try{
+        res.json(await mockController.getComment(req.query.article,
+                                                req.query.username,
+                                                req.body)); //body as just plaintext, is that ok?  Where should we sanitize?
+    } catch (err) {
+        next(err)
+    }
+})
+
+// from old project
+function onError(error) {
+    if (error.name !== 'listen') {
+        throw error;
+    }
+
+    const bind = typeof port === 'string'
+        ? 'Pipe ' + port
+        : 'Port ' + port;
+
+    // handle specific listen errors with friendly messages
+    switch (error.message) {
+        case 'EACCES':
+            console.error(bind + ' requires elevated privileges');
+            process.exit(1);
+            break;
+        case 'EADDRINUSE':
+            console.error(bind + ' is already in use');
+            process.exit(1);
+            break;
+        default:
+            throw error;
+    }
+}
+
+app.listen(PORT);
+app.on('error', onError);
+// server.on('listening', onListening);
+#+end_src
+
+Ok, so with this, some simple curl tests show we are getting the expected output!  Something I realized doing this is that we probably want to assume that, in fact, there is more than one article someone might comment on.  So, the api considers the parameter/query of article id.  It seems we are naturally pushed now towards creating our schema, which will be done with sqlite.
+
