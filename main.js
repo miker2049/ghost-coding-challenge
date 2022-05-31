@@ -1,4 +1,5 @@
-var DBGLOBAL = []
+const ENDPOINT = 'http://localhost:3000'
+const ARTICLE_ID = 1
 
 function formatComment(data){
     return `${data.username} says: ${data.text} -- ${data.upvotes} &#128420;`
@@ -26,7 +27,7 @@ function renderAllComments(datas){
 
 // async, returns a Promise with an array of comments
 function fetchComments(){
-   return fetch("mock-comments.json").then(res=>{
+   return fetch(ENDPOINT+"/api/comments?article="+ARTICLE_ID).then(res=>{
       return res.json()
    })
 }
@@ -38,11 +39,12 @@ function insertComment(data){
 
 function render(){
     fetchComments().then(res=>{
-        if(DBGLOBAL.length>0){
-            res = res.concat(DBGLOBAL)
-        }
-        res = res.sort((a,b)=> a.id - b.id)
-        renderAllComments(res)
+        // if(DBGLOBAL.length>0){
+        //     res = res.concat(DBGLOBAL)
+        // }
+      console.log(res)
+        // res = res.sort((a,b)=> a.id - b.id)
+        // renderAllComments(res)
     })
 }
 

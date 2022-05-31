@@ -1,6 +1,8 @@
 const express = require('express')
+const cors = require('cors')
 const app = express();
 
+app.use(cors())
 const PORT = 3000
 
 const controller = require('./db-controller')
@@ -34,10 +36,12 @@ app.get('/api/comment/:id', async (req,res, next)=>{
     }
 })
 app.get('/api/comments', async (req,res, next)=>{
+    const limit = req.query.limit ?? 100
+    const offset = req.query.offset ?? 0
     try{
         res.json(await controller.getComments(req.query.article,
-                                                  req.query.limit,
-                                                  req.query.offset));
+                                                  limit,
+                                                  offset));
     } catch (err) {
         next(err)
     }

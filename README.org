@@ -303,9 +303,10 @@ NB.  Wasted time, there is a gotcha that =WHERE= statements can't be inside trig
 But, this tangles into a functional init script for our db, and it /seems/ like the triggers are working ok.  One problem so far is that there is nothing stopping a user from liking something twice, as far as this logic is concerned.  Seems like we just need the right UNIQUE placement, but also this should be checked a little farther outside too!
 
 ANOTHER MISTAKE.  I didn't think about nesting and comments... Which might complicate our "article" part of the schema... We have already decided on the convention of an "in-reply-to" having a -1 number to imply it is not in reply to anyone.  And in itself that means that if it is, in fact, in reply to someone it would get a a global id of the parent comment.  What are the consequences of just adding that field? Maybe with a default value...  I don't think much, but it is some extra work on the controller/API side.  That is fine.  Will update it up there now.  (Sqlite does allow a foreign key to be a local key!)
-*** NEXT A db controller.
+*** DONE A db controller.
+CLOSED: [2022-05-31 Tue 15:57]
 :LOGBOOK:
-CLOCK: [2022-05-31 Tue 15:38]
+CLOCK: [2022-05-31 Tue 15:38]--[2022-05-31 Tue 15:57] =>  0:19
 CLOCK: [2022-05-31 Tue 15:07]--[2022-05-31 Tue 15:13] =>  0:06
 :END:
 Moving right along here.  Next up, something to connect the database to our API.  A controller.  Here is where I will have to diverge from proper production because I am choosing Sqlite as my db provider, so differences will start to emerge from this particular implementation versus one using MySql.
