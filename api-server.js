@@ -1,8 +1,11 @@
 const express = require('express')
 const cors = require('cors')
+const bodyParser = require('body-parser')
 const app = express();
 
 app.use(cors())
+app.use(express.urlencoded({extended: false, limit: '250mb'}));
+app.use(bodyParser.text())
 const PORT = 3000
 
 const controller = require('./db-controller')
@@ -62,7 +65,8 @@ app.patch('/api/comment/like', async (req,res, next)=>{
 })
 app.post('/api/comment', async (req,res, next)=>{
     try{
-        res.json(await controller.getComment(req.query.article,
+        console.log(req.query.article, req.query.username, req.body)
+        res.json(await controller.postComment(req.query.article,
                                                 req.query.username,
                                                 req.body)); //body as just plaintext, is that ok?  Where should we sanitize?
     } catch (err) {

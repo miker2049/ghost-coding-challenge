@@ -1,66 +1,70 @@
 const ENDPOINT = 'http://localhost:3000'
 const ARTICLE_ID = 1
 
-function formatComment(data){
-    return `${data.username} says: ${data.text} -- ${data.upvotes} &#128420;`
+function formatComment(data) {
+  console.log(data)
+  return `${data.user} says: ${data.comment_text} -- ${data.like_count} &#128420;`
 }
 
 //Takes comment data and returns a list element with its data
-function renderComment(data){
-    let el = document.createElement("li")
-    el.innerHTML = formatComment(data)
-    return el
+function renderComment(data) {
+  let el = document.createElement("li")
+  el.innerHTML = formatComment(data)
+  return el
 }
 
 // Takes an array of comment data and returns an ol element saturated with the comments
-function renderAllComments(datas){
-  
-   document.querySelector("#comments-list").innerHTML = ''
-   let list = document.createElement("ol")
+function renderAllComments(datas) {
 
-    for(let i = 0; i<datas.length; i++){
-       const thisEl = renderComment(datas[i])
-        list.appendChild(thisEl)
-    }
-    document.querySelector("#comments-list").appendChild(list)
+  document.querySelector("#comments-list").innerHTML = ''
+  let list = document.createElement("ol")
+
+  for (let i = 0; i < datas.length; i++) {
+    const thisEl = renderComment(datas[i])
+    list.appendChild(thisEl)
+  }
+  document.querySelector("#comments-list").appendChild(list)
 }
 
 // async, returns a Promise with an array of comments
-function fetchComments(){
-   return fetch(ENDPOINT+"/api/comments?article="+ARTICLE_ID).then(res=>{
+function fetchComments() {
+  return fetch(ENDPOINT + "/api/comments?article=" + ARTICLE_ID).then(res => {
+    return res.json()
+  })
+}
+
+
+function insertComment(data) {
+  return fetch(ENDPOINT + "/api/comment?article=" + ARTICLE_ID + "&username=chad",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "text/plain"
+      },
+      body:  data.text
+    }).then(res => {
       return res.json()
-   })
-}
-
-
-function insertComment(data){
-    DBGLOBAL.push(data)
-}
-
-function render(){
-    fetchComments().then(res=>{
-        // if(DBGLOBAL.length>0){
-        //     res = res.concat(DBGLOBAL)
-        // }
-      console.log(res)
-        // res = res.sort((a,b)=> a.id - b.id)
-        // renderAllComments(res)
     })
 }
 
-function submitComment(){
+function render() {
+  return fetchComments().then(res => {
+    // if(DBGLOBAL.length>0){
+    //     res = res.concat(DBGLOBAL)
+    // }
+    // console.log(res)
+    // res = res.sort((a,b)=> a.id - b.id)
+    renderAllComments(res)
+  })
+}
+
+function submitComment() {
   let comment = document.querySelector('#comment-box')
-  if(comment){
-    console.log(comment.value)
+  if (comment) {
     insertComment({
-        id: 32,
-        upvotes: 0,
-        username: "chad",
-        text: comment.value,
-        replies: [],
-        "in-reply-to": -1
-    })
-    render()
+      username: "chad",
+      text: comment.value
+    }).then(_=> render())
   }
 }
 render()
