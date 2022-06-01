@@ -1,9 +1,10 @@
 const ENDPOINT = 'http://localhost:3000'
 const ARTICLE_ID = 1
+const USER_ID = 1
 
 function formatComment(data) {
   console.log(data)
-  return `${data.user} says: ${data.comment_text} -- ${data.like_count} &#128420;`
+  return `${data.user} says: ${data.comment_text} -- <button onclick="console.log('hoop')" class="astext">${data.like_count} &#128420;</button> `
 }
 
 //Takes comment data and returns a list element with its data
@@ -66,5 +67,9 @@ function submitComment() {
       text: comment.value
     }).then(_=> render())
   }
+}
+
+function likeComment(id, uid){
+
 }
 render()

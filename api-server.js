@@ -58,7 +58,7 @@ app.get('/api/comment/count', async (req,res, next)=>{
 })
 app.patch('/api/comment/like', async (req,res, next)=>{
     try{
-        res.json(await controller.likeComment(req.query.id));
+        res.json(await controller.likeComment(req.query.id, req.query.userid));
     } catch (err) {
         next(err)
     }

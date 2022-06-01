@@ -362,8 +362,8 @@ I imagine that they way things normally work is the user logs in and now they ar
 
 Let's see what happens when we plug this in.  (N.B. Note that from here forward we will work with the files alone, to no get confused about the tangling.  Especially for the express server part.)
 
-*** NEXT pasting it all up together for V1
+*** TODO pasting it all up together for V1
 :LOGBOOK:
-CLOCK: [2022-05-31 Tue 16:09]
+CLOCK: [2022-05-31 Tue 16:09]--[2022-05-31 Tue 16:29] =>  0:20
 :END:
 One thing I realize, with the addition of =in-reply-to= as well as a few other things, my min/max API query seems dumb.  We can't count on knowing how contiguous comments are across different articles (even, yes, knowing these are only hypothetical articles), it makes sense to use LIMIT and OFFSET instead... at least for MVP, I know they aren't best practice in general.  So we will make the necessary changes to the controller and the server, and now speak in terms of limit and offset.

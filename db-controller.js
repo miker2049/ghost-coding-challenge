@@ -15,7 +15,7 @@ module.exports = {
   async getComments($article, $limit, $offset) {
     $limit = Math.max($limit, 1000) // other people have to use the db too!
     return await new Promise((res, rej) => {
-      db.all('SELECT user,article,comment_text,like_count FROM comments JOIN like_tallies ON comments.id = like_tallies.comment_id ' +
+      db.all('SELECT comments.id,user,article,comment_text,like_count FROM comments JOIN like_tallies ON comments.id = like_tallies.comment_id ' +
         ' WHERE article = $article AND comments.id > 0 LIMIT $limit OFFSET $offset',
         { $limit, $offset, $article }, (err, rows) => {
           res(rows)
